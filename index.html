@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Zone Rush 3D</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#9ad0f5">
+<meta name="theme-color" content="#16254f">
 <link rel="icon" href="icon-192.png">
 <style>
 :root{--bg:#9ad0f5;--fg:#1d1d1f;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -40,7 +40,7 @@ button{background:#2f80ed;color:#fff;border:0;border-radius:10px;padding:12px 28
 <div id="hud"><span>Zone: <b id="sc">0%</b></span><span>Best: <b id="bs">0%</b></span></div>
 <div id="wrap">
 <div id="intro"><div class="logo"><span>ZONE</span><span>RUSH</span><b>3D</b></div><p>Tap to start</p></div>
-<div id="ov" style="display:none"><div id="card"><h1 id="t">Zone Rush 3D</h1><p id="m">Swipe ya arrow keys se chalo. Apni zameen se bahar nikalo, loop band karke area capture karo. Trail kat gayi toh out!</p><div id="sw"></div><button id="go">Play</button><br><button id="snd">🔊 Sound: On</button></div></div></div>
+<div id="ov" style="display:none"><div id="card"><h1 id="t">Zone Rush 3D</h1><p id="m">Swipe or use the arrow keys to move. Leave your zone, close a loop and capture the area. If your trail gets cut, you are out!</p><div id="sw"></div><button id="go">Play</button><br><button id="snd">🔊 Sound: On</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const N=64,TICK=120,COLORS=['#2f80ed','#eb5757','#27ae60','#f2994a','#9b51e0'];
@@ -48,7 +48,7 @@ const wrap=document.getElementById('wrap'),sc=document.getElementById('sc'),bs=d
 let own,trl,ents,running=false,best=0,timer,lastTick=0;
 try{best=+localStorage.getItem('zrBest')||0}catch(e){}
 bs.textContent=best+'%';
-if(typeof THREE==='undefined'){document.getElementById('m').textContent='3D engine load nahi hua. Internet check karo.'}
+if(typeof THREE==='undefined'){document.getElementById('m').textContent='The 3D engine failed to load. Please check your internet.'}
 const idx=(x,y)=>y*N+x;
 let RAD=N/2-.3;
 const inC=(x,y)=>x>=0&&y>=0&&x<N&&y<N&&(Math.max(Math.abs(x+.5-N/2)-.5,0)**2+Math.max(Math.abs(y+.5-N/2)-.5,0)**2<=RAD*RAD);
@@ -213,10 +213,10 @@ function gameOver(){
   try{localStorage.setItem('zrBest',best)}catch(e){}
   document.getElementById('t').textContent=(best>bestAtStart&&(ents[0].pc||0)>0)?'🏆 New Best!':'Game Over';
   {const pc=ents[0].pc||0,secs=Math.round((performance.now()-t0)/1000),two=v=>String(v).padStart(2,'0');
-  document.getElementById('m').innerHTML='<span id="big" style="font-size:54px;font-weight:900;color:#2f80ed">0%</span><br>Best: '+best+'% &nbsp;•&nbsp; Time: '+two(Math.floor(secs/60))+':'+two(secs%60)+'<br><small>Phir milte hain! 👋</small>';
+  document.getElementById('m').innerHTML='<span id="big" style="font-size:54px;font-weight:900;color:#2f80ed">0%</span><br>Best: '+best+'% &nbsp;•&nbsp; Time: '+two(Math.floor(secs/60))+':'+two(secs%60)+'<br><small>See you next time! 👋</small>';
   let n=0;const big=document.getElementById('big'),iv=setInterval(()=>{n=Math.min(pc,n+Math.max(1,Math.ceil(pc/20)));big.textContent=n+'%';sfx(300+n*12,.04,'square',.05);if(n>=pc)clearInterval(iv)},40);
   if(best>bestAtStart&&pc>0)setTimeout(()=>{sfx(660,.12,'triangle',.2);setTimeout(()=>sfx(880,.12,'triangle',.2),120);setTimeout(()=>sfx(1100,.25,'triangle',.2),240)},900)}
-  document.getElementById('go').textContent='Phir se khelo';
+  document.getElementById('go').textContent='Play Again';
   ov.style.display='flex';
 }
 function start(){
@@ -338,14 +338,14 @@ function premBar(c,redo){
   if(prem)return;
   const b=document.createElement('button');b.textContent='👑 Unlock Premium (Demo)';b.style.cssText='background:#f2b01e;color:#222;margin-bottom:6px';
   b.onclick=()=>{prem=true;st('zrPrem','1');sfx(880,.2,'triangle',.2);redo()};c.appendChild(b);
-  const p=document.createElement('p');p.textContent='🔒 = Premium (8 skins, Himalaya, Moon). Demo button hai; asli app mein Google Play subscription se khulega.';c.appendChild(p);
+  const p=document.createElement('p');p.textContent='🔒 = Premium (8 skins, Himalaya, Moon). This is a demo button; the real app will unlock it with a Google Play subscription.';c.appendChild(p);
 }
 function openSkins(){show('Skins 🪙 '+coins,c=>{premBar(c,openSkins);const g=document.createElement('div');g.className='grid';
   SK.forEach((s,i)=>{const d=document.createElement('div');d.className='it'+(i===sel?' on':'');d.style.background=s.c;d.textContent=HE[s.h];
     if(s.$&&!owned.has(i)){const l=document.createElement('div');l.className='lk';l.style.fontSize='10px';l.textContent='🪙'+s.$;d.appendChild(l)}
     if(s.p&&!prem){const l=document.createElement('div');l.className='lk';l.textContent='🔒';d.appendChild(l)}
     d.onclick=()=>{if(s.p&&!prem){sfx(180,.15,'square',.1);return}
-      if(s.$&&!owned.has(i)){if(coins<s.$){sfx(180,.15,'square',.1);panel.querySelector('h2').textContent='❌ Coins kam hain ('+s.$+' chahiye)';return}coins-=s.$;owned.add(i);st('zrCoins',coins);st('zrOwn',JSON.stringify([...owned]));updCoins();sfx(880,.15,'triangle',.2)}
+      if(s.$&&!owned.has(i)){if(coins<s.$){sfx(180,.15,'square',.1);panel.querySelector('h2').textContent='❌ Not enough coins ('+s.$+' needed)';return}coins-=s.$;owned.add(i);st('zrCoins',coins);st('zrOwn',JSON.stringify([...owned]));updCoins();sfx(880,.15,'triangle',.2)}
       sel=i;st('zrSk2',i);applySkinN();sfx(600,.06,'triangle',.1);openSkins()};g.appendChild(d)});
   c.appendChild(g)})}
 const TH=[['city','🏙️ City',0],['forest','🌲 Forest',0],['village','🏡 Village',0],['himalaya','🏔️ Himalaya',1],['moon','🌙 Moon',1]];
@@ -417,7 +417,7 @@ const $=id=>document.getElementById(id);
 board.geometry.dispose();board.geometry=new THREE.CylinderGeometry(N/2,N/2,.3,72);grid.visible=false;
 const minis=[...document.querySelectorAll('.mini')];minis[0].parentNode.style.display='none';$('snd').style.display='none';
 const menu=document.createElement('div');menu.id='menu';
-menu.innerHTML='<div id="tr"></div><div id="bot"><div id="hint">Swipe karke chalo • loop banao, zone capture karo</div><button id="startBtn">START ▶</button></div>';
+menu.innerHTML='<div id="tr"></div><div id="bot"><div id="hint">Swipe to move • close a loop to capture zone</div><button id="startBtn">START ▶</button></div>';
 wrap.appendChild(menu);
 [['🎨','Skins',0],['🌍','World',1],['⚙️','Settings',2]].forEach(([i,l,k])=>{const d=document.createElement('div');d.className='rw';d.innerHTML='<button class="rb">'+i+'</button><span>'+l+'</span>';d.firstChild.onclick=()=>minis[k].click();$('tr').appendChild(d)});
 $('startBtn').onclick=()=>{menu.style.display='none';$('go').click()};
@@ -506,7 +506,7 @@ function levelUp(){
     for(let i=0;i<30;i++){const c=document.createElement('i');c.className='fc';c.style.cssText='left:'+Math.random()*100+'%;background:'+FCOL[i%5]+';animation-duration:'+(2+Math.random()*2)+'s;animation-delay:-'+Math.random()*2+'s';bn.appendChild(c)}
     const reset=()=>{bn.style.pointerEvents='none';bn.style.background=''};
     $('vNext').onclick=()=>{reset();startL()};
-    const dbl=document.createElement('button');dbl.textContent='📺 Ad dekho: coins double (+'+gain+')';dbl.style.cssText='background:#f2b01e;color:#222;margin-bottom:8px;font-size:15px';
+    const dbl=document.createElement('button');dbl.textContent='📺 Watch ad: double coins (+'+gain+')';dbl.style.cssText='background:#f2b01e;color:#222;margin-bottom:8px;font-size:15px';
     dbl.onclick=()=>window.zrAd(()=>{window.zrAddCoins(gain);dbl.textContent='✅ Doubled! +'+gain;dbl.disabled=true;sfx(880,.15,'triangle',.2)});
     $('vNext').parentNode.insertBefore(dbl,$('vNext'));
     $('vHome').onclick=()=>{reset();bn.style.display='none';$('menu').style.display='block'};
@@ -547,9 +547,9 @@ window.gameOver=function(){
   _g();
   const pcx=ents[0].pc||0,secx=Math.round((performance.now()-t0)/1000),gx=Math.max(1,Math.min(50+level*4,Math.round(pcx*.4+secx*.1)));
   window.zrAddCoins(gx);
-  setTimeout(()=>{const b=document.createElement('button');b.textContent='📺 Ad dekho: coins double (+'+gx+')';b.style.cssText='background:#f2b01e;color:#222;display:block;margin:10px auto 0;font-size:14px;padding:10px 16px';b.onclick=()=>window.zrAd(()=>{window.zrAddCoins(gx);b.textContent='✅ Doubled! +'+gx;b.disabled=true;sfx(880,.15,'triangle',.2)});$('m').appendChild(b)},0);
+  setTimeout(()=>{const b=document.createElement('button');b.textContent='📺 Watch ad: double coins (+'+gx+')';b.style.cssText='background:#f2b01e;color:#222;display:block;margin:10px auto 0;font-size:14px;padding:10px 16px';b.onclick=()=>window.zrAd(()=>{window.zrAddCoins(gx);b.textContent='✅ Doubled! +'+gx;b.disabled=true;sfx(880,.15,'triangle',.2)});$('m').appendChild(b)},0);
   $('m').insertAdjacentHTML('beforeend','<div style="color:#d89a00;font-weight:800;font-size:18px;margin-top:8px">+'+gx+' 🪙<br><small style="color:#777;font-weight:400">Zone '+pcx+'% · Time '+secx+'s</small></div>');
-  $('m').insertAdjacentHTML('afterbegin','<div style="font-weight:800;margin-bottom:6px;color:'+D.c+'">LEVEL '+level+' · '+D.n+'<br><small>Target: '+target(level)+'% • Dobara try karo!</small></div>');
+  $('m').insertAdjacentHTML('afterbegin','<div style="font-weight:800;margin-bottom:6px;color:'+D.c+'">LEVEL '+level+' · '+D.n+'<br><small>Target: '+target(level)+'% • Try again!</small></div>');
 };
 })();
 </script>
@@ -566,7 +566,7 @@ window.gameOver=function(){
 #adov{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;font-size:22px;font-weight:800}
 </style>
 <script>
-/* Ads: jab real ads (H5 Games Ads) approve ho jayein tab ZR_ADS_LIVE=true karo */
+/* Ads: set ZR_ADS_LIVE=true once real ads (H5 Games Ads) are approved */
 window.ZR_ADS_LIVE=false;
 (function(){
 const $=id=>document.getElementById(id),wrap2=document.getElementById('wrap');
@@ -589,9 +589,9 @@ wrap2.appendChild(ov2);
     x.save();x.translate(R,R);x.rotate(a+Math.PI/8);x.fillStyle='#fff';x.font='bold 20px sans-serif';x.textAlign='right';x.fillText(PR[i],R-16,7);x.restore()}})();
 function refreshUI(){
   const s=ldS(),left=MAX-s.n,b=$('sbtn'),t=new Date(),m=new Date(t.getFullYear(),t.getMonth(),t.getDate()+1)-t;
-  $('sh').textContent='Aaj ke spins bache: '+left+' / '+MAX;
-  if(left<=0){b.textContent='Kal phir aana · '+Math.floor(m/36e5)+'h '+Math.floor(m%36e5/6e4)+'m';b.disabled=true}
-  else{b.disabled=busy;b.textContent=s.n===0?'🎁 SPIN (Free)':'📺 Ad dekho & Spin'}
+  $('sh').textContent='Spins left today: '+left+' / '+MAX;
+  if(left<=0){b.textContent='Come back tomorrow · '+Math.floor(m/36e5)+'h '+Math.floor(m%36e5/6e4)+'m';b.disabled=true}
+  else{b.disabled=busy;b.textContent=s.n===0?'🎁 SPIN (Free)':'📺 Watch Ad & Spin'}
   const d=$('sdot');if(d)d.style.display=s.n===0?'block':'none';
 }
 function spin(){
@@ -609,6 +609,83 @@ $('sbtn').onclick=()=>{if(busy)return;const s=ldS();if(s.n>=MAX)return;if(s.n===
 $('sx').onclick=()=>{if(!busy)ov2.style.display='none'};
 const tr=$('tr'),d=document.createElement('div');d.className='rw';d.innerHTML='<button class="rb">🎡</button><i id="sdot"></i><span>Spin</span>';
 d.firstChild.onclick=()=>{ov2.style.display='flex';refreshUI()};tr.appendChild(d);refreshUI();
+})();
+</script>
+<script>
+/* languages: English phrase -> translation (same order as K) */
+(function(){
+const K=['START','Swipe to move • close a loop to capture zone','Skins','World','Settings','Spin','Tap to start','Zone:','Best:','Sound','Vibration','Language','Done','Close','Daily Spin','Spins left today:','SPIN (Free)','Watch Ad & Spin','Come back tomorrow','VICTORY!','Next Level','Home','Watch ad: double coins','Doubled!','Game Over','New Best!','Play Again','LEVEL','City','Forest','Village','Himalaya','Moon'];
+const L={en:null,
+hi:['शुरू करें','चलने के लिए स्वाइप करें • लूप बंद करके ज़ोन जीतें','स्किन','दुनिया','सेटिंग्स','स्पिन','शुरू करने के लिए टैप करें','ज़ोन:','सर्वश्रेष्ठ:','आवाज़','कंपन','भाषा','ठीक है','बंद करें','दैनिक स्पिन','आज के बचे स्पिन:','स्पिन (मुफ़्त)','विज्ञापन देखें और स्पिन करें','कल फिर आएं','जीत!','अगला लेवल','होम','विज्ञापन देखें: कॉइन दोगुने','दोगुना!','गेम खत्म','नया रिकॉर्ड!','फिर खेलें','लेवल','शहर','जंगल','गाँव','हिमालय','चाँद'],
+es:['JUGAR','Desliza para moverte • cierra un bucle para capturar la zona','Skins','Mundo','Ajustes','Girar','Toca para empezar','Zona:','Mejor:','Sonido','Vibración','Idioma','Hecho','Cerrar','Giro diario','Giros restantes hoy:','GIRAR (Gratis)','Ver anuncio y girar','Vuelve mañana','¡VICTORIA!','Siguiente nivel','Inicio','Ver anuncio: monedas x2','¡Duplicado!','Fin del juego','¡Nuevo récord!','Jugar de nuevo','NIVEL','Ciudad','Bosque','Pueblo','Himalaya','Luna'],
+fr:['JOUER','Glisse pour bouger • ferme une boucle pour capturer la zone','Skins','Monde','Réglages','Tourner','Touche pour commencer','Zone :','Record :','Son','Vibration','Langue','OK','Fermer','Roue du jour','Tours restants :','TOURNER (Gratuit)','Voir une pub et tourner','Reviens demain','VICTOIRE !','Niveau suivant','Accueil','Voir une pub : pièces x2','Doublé !','Partie terminée','Nouveau record !','Rejouer','NIVEAU','Ville','Forêt','Village','Himalaya','Lune'],
+de:['LOS','Wischen zum Bewegen • Schleife schließen, um die Zone zu erobern','Skins','Welt','Einstellungen','Drehen','Zum Starten tippen','Zone:','Rekord:','Ton','Vibration','Sprache','Fertig','Schließen','Tägliches Glücksrad','Heutige Drehs übrig:','DREHEN (Gratis)','Werbung ansehen & drehen','Komm morgen wieder','SIEG!','Nächstes Level','Start','Werbung ansehen: Münzen x2','Verdoppelt!','Spiel vorbei','Neuer Rekord!','Nochmal spielen','LEVEL','Stadt','Wald','Dorf','Himalaya','Mond'],
+pt:['JOGAR','Deslize para mover • feche um laço para capturar a zona','Skins','Mundo','Configurações','Girar','Toque para começar','Zona:','Recorde:','Som','Vibração','Idioma','Concluído','Fechar','Giro diário','Giros restantes hoje:','GIRAR (Grátis)','Ver anúncio e girar','Volte amanhã','VITÓRIA!','Próximo nível','Início','Ver anúncio: moedas x2','Dobrado!','Fim de jogo','Novo recorde!','Jogar novamente','NÍVEL','Cidade','Floresta','Vila','Himalaia','Lua'],
+ar:['ابدأ','اسحب للتحرك • أغلق حلقة للاستيلاء على المنطقة','الأزياء','العالم','الإعدادات','تدوير','اضغط للبدء','المنطقة:','الأفضل:','الصوت','الاهتزاز','اللغة','تم','إغلاق','العجلة اليومية','الدورات المتبقية اليوم:','تدوير (مجاني)','شاهد إعلانًا وأدِر','عد غدًا','انتصار!','المستوى التالي','الرئيسية','شاهد إعلانًا: مضاعفة العملات','تمت المضاعفة!','انتهت اللعبة','رقم قياسي جديد!','العب مجددًا','المستوى','المدينة','الغابة','القرية','الهيمالايا','القمر'],
+ru:['СТАРТ','Свайпай для движения • замкни петлю, чтобы захватить зону','Скины','Мир','Настройки','Крутить','Нажми, чтобы начать','Зона:','Рекорд:','Звук','Вибрация','Язык','Готово','Закрыть','Ежедневное колесо','Осталось попыток сегодня:','КРУТИТЬ (Бесплатно)','Смотреть рекламу и крутить','Приходи завтра','ПОБЕДА!','Следующий уровень','Домой','Смотреть рекламу: монеты x2','Удвоено!','Игра окончена','Новый рекорд!','Играть снова','УРОВЕНЬ','Город','Лес','Деревня','Гималаи','Луна'],
+id:['MULAI','Geser untuk bergerak • tutup lingkaran untuk merebut zona','Skin','Dunia','Pengaturan','Putar','Ketuk untuk mulai','Zona:','Terbaik:','Suara','Getar','Bahasa','Selesai','Tutup','Putaran Harian','Sisa putaran hari ini:','PUTAR (Gratis)','Tonton iklan & putar','Kembali besok','MENANG!','Level berikutnya','Beranda','Tonton iklan: koin x2','Digandakan!','Permainan berakhir','Rekor baru!','Main lagi','LEVEL','Kota','Hutan','Desa','Himalaya','Bulan'],
+tr:['BAŞLA','Hareket için kaydır • bölgeyi ele geçirmek için döngüyü kapat','Kostümler','Dünya','Ayarlar','Çevir','Başlamak için dokun','Bölge:','En iyi:','Ses','Titreşim','Dil','Tamam','Kapat','Günlük Çark','Bugün kalan çevirme:','ÇEVİR (Ücretsiz)','Reklam izle ve çevir','Yarın tekrar gel','ZAFER!','Sonraki seviye','Ana sayfa','Reklam izle: jetonlar x2','İkiye katlandı!','Oyun bitti','Yeni rekor!','Tekrar oyna','SEVİYE','Şehir','Orman','Köy','Himalaya','Ay']};
+const NM={en:'English',hi:'हिन्दी',es:'Español',fr:'Français',de:'Deutsch',pt:'Português',ar:'العربية',ru:'Русский',id:'Bahasa Indonesia',tr:'Türkçe'};
+let lang='';try{lang=localStorage.getItem('zrLang')||''}catch(e){}
+if(!Object.prototype.hasOwnProperty.call(L,lang)){const n=(navigator.language||'en').slice(0,2).toLowerCase();lang=Object.prototype.hasOwnProperty.call(L,n)?n:'en'}
+let pairs=[];
+function build(){pairs=[];if(L[lang])K.forEach((k,i)=>pairs.push([k,L[lang][i]]));pairs.sort((a,b)=>b[0].length-a[0].length)}
+const trs=s=>{for(const[a,b]of pairs)if(s.includes(a))s=s.split(a).join(b);return s};
+function tn(n){
+  const p=n.parentNode;if(!p||p.nodeName==='SCRIPT'||p.nodeName==='STYLE')return;
+  const cur=n.data;if(n.__o===undefined||cur!==n.__o)n.__e=cur;
+  const out=trs(n.__e);n.__o=out;if(out!==cur)n.data=out;
+}
+function walk(r){if(r.nodeType===3)return tn(r);const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())tn(n)}
+function injectLang(){
+  const p=document.getElementById('panel');if(!p||p.style.display==='none'||p.querySelector('#lgsel'))return;
+  const h=p.querySelector('h2');if(!h||!h.firstChild||!/Settings/.test(h.firstChild.__e||''))return;
+  const r=document.createElement('div');r.className='row';r.innerHTML='<span>🌐 Language</span><select id="lgsel" style="font-size:15px;padding:6px;border-radius:8px"></select>';
+  const s=r.querySelector('select');for(const k in NM){const o=document.createElement('option');o.value=k;o.textContent=NM[k];s.appendChild(o)}
+  s.value=lang;s.onchange=()=>{lang=s.value;try{localStorage.setItem('zrLang',lang)}catch(e){}build();walk(document.body)};
+  const bs=p.querySelectorAll('.pc > button'),d=bs[bs.length-1];d.parentNode.insertBefore(r,d);
+}
+build();walk(document.body);
+new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')tn(m.target);else m.addedNodes.forEach(x=>{if(x.nodeType===3||x.nodeType===1)walk(x)})}injectLang()}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+<script>
+/* Original ambient theme music (synthesized, no audio files) */
+(function(){
+let mg=null,musicOn=true,stp=0,tm=null,nextT=0;
+try{musicOn=localStorage.getItem('zrMusic')!=='0'}catch(e){}
+const CH=[[57,60,64],[53,57,60],[48,52,55],[55,59,62]],fq=m=>440*Math.pow(2,(m-69)/12);
+function note(t,m,d,type,vol,att){const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=fq(m);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(mg);o.start(t);o.stop(t+d+.05)}
+function sched(){
+  if(!actx||!mg)return;
+  mg.gain.setTargetAtTime(soundOn&&musicOn?(running?.05:.11):0,actx.currentTime,.6);
+  while(nextT<actx.currentTime+1.2){
+    const ch=CH[Math.floor(stp/8)%4],b=stp%8;
+    if(b===0){ch.forEach(m=>note(nextT,m,4.2,'sine',.5,1.2));note(nextT,ch[0]-12,4.2,'triangle',.6,.8)}
+    const ar=[ch[0]+12,ch[1]+12,ch[2]+12,ch[1]+12][b%4]+(b>=4&&Math.random()<.5?12:0);
+    if(Math.random()<.8)note(nextT,ar,1.4,'sine',.35,.02);
+    nextT+=.5;stp++;
+  }
+}
+function startM(){
+  if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}}
+  if(actx.state==='suspended')actx.resume();
+  if(tm)return;
+  mg=actx.createGain();mg.gain.value=0;
+  const dl=actx.createDelay(),fb=actx.createGain();dl.delayTime.value=.42;fb.gain.value=.38;
+  mg.connect(actx.destination);mg.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(actx.destination);
+  nextT=actx.currentTime+.1;sched();tm=setInterval(sched,400);
+}
+['pointerdown','touchstart','keydown'].forEach(ev=>addEventListener(ev,startM));
+document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else actx.resume()});
+new MutationObserver(()=>{
+  const p=document.getElementById('panel');if(!p||p.style.display==='none'||p.querySelector('#mrow'))return;
+  const h=p.querySelector('h2');if(!h||!h.textContent.includes('⚙'))return;
+  const r=document.createElement('div');r.id='mrow';r.className='row';r.innerHTML='<span>🎵 Music</span>';
+  const t=document.createElement('div');t.className='tg'+(musicOn?' on':'');
+  t.onclick=()=>{musicOn=!musicOn;try{localStorage.setItem('zrMusic',musicOn?1:0)}catch(e){}t.classList.toggle('on',musicOn);startM();sched()};
+  r.appendChild(t);const bs=p.querySelectorAll('.pc > button'),d=bs[bs.length-1];d.parentNode.insertBefore(r,d);
+}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')</script>
